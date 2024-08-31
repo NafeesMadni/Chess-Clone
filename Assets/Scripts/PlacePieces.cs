@@ -60,7 +60,7 @@ public class placePieces : MonoBehaviour
     private Vector2Int enPassantPiece;
     private List<Vector2Int> enPassantMoves;
 
-    // prohibit Location for both the kings 
+    // block location for both kings 
     private List<Vector2Int> b_KingBlockSq;
     private List<Vector2Int> w_KingBlockSq;
 
