@@ -12,8 +12,10 @@ public class ChessBoard : MonoBehaviour
     private void Awake()
     {
         DrawAllTiles(1f, 8, 8);
-        transform.position = new Vector3(-3.3f, -3.3f, 1);
-        transform.localScale = new Vector3(0.95f, 0.95f, 1);
+        //transform.position = new Vector3(-3.3f, -3.3f, 1);
+        //transform.localScale = new Vector3(0.95f, 0.95f, 1);
+        transform.position = new Vector3(-2.98f, -2.99f, 1);
+        transform.localScale = new Vector3(0.9f, 0.9f, 1);
     }
 
     #region Get Tiles Index
