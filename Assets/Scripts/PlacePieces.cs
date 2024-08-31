@@ -383,7 +383,7 @@ public class placePieces : MonoBehaviour
                 // first check whether the fellow or opponent pieces blocking the king from castling or not
                 if (piecesData.ContainsKey(new Vector2Int(king.x, y)))
                 {
-                    // random piece block the king's castle way
+                    // random piece block
                     leftRook = false;
                     break;
                 }
@@ -404,10 +404,9 @@ public class placePieces : MonoBehaviour
                     }
                 }
                 if(leftRook)
-                {
                     // Add the extra move to the king on the left
                     availableMoves[king].Add(new Vector2Int(king.x, king.y - 2));
-                }
+               
             } 
         }
         if (rightRook)
@@ -435,9 +434,8 @@ public class placePieces : MonoBehaviour
                     }
                 }
                 if (rightRook)
-                {
                     availableMoves[king].Add(new Vector2Int(king.x, king.y + 2));
-                }
+                
             }
         }
     }
@@ -839,7 +837,7 @@ public class placePieces : MonoBehaviour
             if (attackerPos.Count > 1)
             {
 
-                // if discovery + direct attack then remove all the available moves exept king moves (escaping Moves)
+                // if discovery + direct attack then remove all the available moves except king moves (escaping Moves)
                 foreach (Vector2Int key in piecesData.Keys)
                 {
                     if (piecesData[key].color == playerTurn)
@@ -1640,7 +1638,7 @@ public class placePieces : MonoBehaviour
         Vector2Int move;
 
         #region Simple Code Version 
-        // if there contain a piece with the same color then break
+        // piece with the same color then break 
         //for (int i = 1; i < 8; i++)
         //{
         //    move = new Vector2Int(x + i, y + i);
