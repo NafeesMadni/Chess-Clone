@@ -1341,9 +1341,9 @@ public class placePieces : MonoBehaviour
 
                         case "Pawn":
                             if (color == 'W')
-                                availableMoves[piecePos] = F_RowPawnMoves(x, y, b_KingBlockSq);
+                                availableMoves[piecePos] = PawnMoves(x, y, color, b_KingBlockSq);
                             else
-                                availableMoves[piecePos] = S_RowPawnMoves(x, y, w_KingBlockSq);
+                                availableMoves[piecePos] = PawnMoves(x, y, color, w_KingBlockSq);
                             break;
 
                         default:
@@ -1749,100 +1749,36 @@ public class placePieces : MonoBehaviour
 
     #endregion
 
-    #region Six Row Pawns
-    private List<Vector2Int> S_RowPawnMoves(int x, int y, List<Vector2Int> kingBlockSq)
+    #region Pawns
+
+    private List<Vector2Int> PawnMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
         Vector2Int move;
+        int direction = (color == 'W') ? 1 : -1; // White moves up, Black moves down
 
-        // forward moves
-        // Vector2Int(-1, 0);
-        if (x - 1 >= 0 && !piecesData.ContainsKey(new Vector2Int(x - 1, y)))
+        // Forward moves
+        if (IsWithinBounds(x + direction, y) && !piecesData.ContainsKey(new Vector2Int(x + direction, y)))
         {
-            // Vector2Int(-2, 0)
-            if (x - 2 >= 0 && !piecesData.ContainsKey(new Vector2Int(x - 2, y)) && x == 6)
-                list.Add(new Vector2Int(x - 2, y));
+            if (IsWithinBounds(x + 2 * direction, y) && !piecesData.ContainsKey(new Vector2Int(x + 2 * direction, y)) && ((color == 'W' && x == 1) || (color == 'B' && x == 6)))
+                list.Add(new Vector2Int(x + 2 * direction, y));
 
-            list.Add(new Vector2Int(x - 1, y));
+            list.Add(new Vector2Int(x + direction, y));
         }
 
-
-        // => killing moves
-
-        // Vector2Int(-1, -1);
-        if (x - 1 >= 0 && y - 1 >= 0)
+        // Killing moves
+        foreach (var (dx, dy) in new[] { (-1, -1), (-1, 1) })
         {
-            move = new Vector2Int(x - 1, y - 1);
-            if (piecesData.ContainsKey(move))
-            {
-                if (piecesData[new Vector2Int(x, y)].color != piecesData[move].color)
-                    list.Add(move);
-            }
+            move = new Vector2Int(x + direction, y + dy);
+            if (IsWithinBounds(move.x, move.y) && piecesData.ContainsKey(move) && piecesData[move].color != color)
+                list.Add(move);
+
             if (!kingBlockSq.Contains(move))
                 kingBlockSq.Add(move);
         }
-
-        // Vector2Int(-1, 1);
-        if (x - 1 >= 0 && y + 1 < 8)
-        {
-            move = new Vector2Int(x - 1, y + 1);
-            if (piecesData.ContainsKey(move))
-            {
-                if (piecesData[new Vector2Int(x, y)].color != piecesData[move].color)
-                    list.Add(move);
-            }
-            if(!kingBlockSq.Contains(move))
-                kingBlockSq.Add(move);
-        }
         return list;
     }
 
-    #endregion
-
-    #region First Row Pawns
-    private List<Vector2Int> F_RowPawnMoves(int x, int y, List<Vector2Int> KingBlockSq)
-    {
-        List<Vector2Int> list = new List<Vector2Int>();
-        Vector2Int vec;
-
-        // Vector2Int(1, 0)
-        if (x + 1 < 8 && !piecesData.ContainsKey(new Vector2Int(x + 1, y)))
-        {
-            // Vector2Int(2, 0)
-            if (x + 2 < 8 && !piecesData.ContainsKey(new Vector2Int(x + 2, y)) && x == 1)
-                list.Add(new Vector2Int(x + 2, y));
-
-            list.Add(new Vector2Int(x + 1, y));
-        }
-
-        // Vector2Int(1, -1);
-        if (x + 1 < 8 && y - 1 >= 0)
-        {
-            vec = new Vector2Int(x + 1, y - 1);
-            if (piecesData.ContainsKey(vec))
-            {
-                if (piecesData[new Vector2Int(x, y)].color != piecesData[vec].color)
-                    list.Add(vec);
-            }
-            if (!KingBlockSq.Contains(vec))
-                KingBlockSq.Add(vec);
-        }
-
-        // Vector2Int(1, 1);
-        if (x + 1 < 8 && y + 1 < 8)
-        {
-            vec = new Vector2Int(x + 1, y + 1);
-            if (piecesData.ContainsKey(vec))
-            {
-                if (piecesData[new Vector2Int(x, y)].color != piecesData[vec].color)
-                    list.Add(vec);
-            }
-            if (!KingBlockSq.Contains(vec))
-                KingBlockSq.Add(vec);
-        }
-        // Add En-Passant case while playing => (0, -1), (0, 1)
-        return list;
-    }
 
     #endregion
 
