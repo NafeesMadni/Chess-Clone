@@ -1376,51 +1376,37 @@ public class placePieces : MonoBehaviour
         }
     }
 
+    #region Updating Castling Possibilities
     private void updateCastleMoves(Vector2Int castleKing, Vector2Int king, Vector2Int leftRook, Vector2Int rightRook)
     {
-        if (!castleMove.ContainsKey(castleKing)) 
-            return;
-
-        // king Moved
-        if (castleKing != king)
+        if (!castleMove.ContainsKey(castleKing) || castleKing != king)
         {
+            // castleKing != king => if king moved
             if (castleMove.ContainsKey(castleKing))
                 castleMove.Remove(castleKing);
 
             return;
         }
 
-        if (!piecesData.ContainsKey(leftRook))
-        {
-            if (castleMove[castleKing].Contains(leftRook)){
-                Debug.Log("Left Rook Moved");
-                castleMove[castleKing].Remove(leftRook);
-            }
 
-        }
+        CheckAndRemoveRook(leftRook, castleKing);
+        CheckAndRemoveRook(rightRook, castleKing);
+    }
 
-        // rook captured by opponent piece
-        else if (piecesData.ContainsKey(leftRook) && piecesData[leftRook].color != playerTurn)
-        {
-            if (castleMove[castleKing].Contains(leftRook))
-                castleMove[castleKing].Remove(leftRook);
-        }
+    private void CheckAndRemoveRook(Vector2Int rookPos, Vector2Int castleKing)
+    {
+        // !piecesData.ContainsKey(rookPos) => Rook Moved
+        // piecesData[rookPos].color != playerTurn => Rook Captured by Opponent piece
 
-        if (!piecesData.ContainsKey(rightRook))
+        if (!piecesData.ContainsKey(rookPos) || piecesData[rookPos].color != playerTurn)
         {
-            if (castleMove[castleKing].Contains(rightRook)){
-                Debug.Log("Right Rook Moved");
-                castleMove[castleKing].Remove(rightRook);
-            }
-        }
-
-        // rook captured by opponent 
-        else if (piecesData.ContainsKey(rightRook) && piecesData[rightRook].color != playerTurn)
-        {
-            if (castleMove[castleKing].Contains(rightRook))
-                castleMove[castleKing].Remove(rightRook);
+            if (castleMove[castleKing].Contains(rookPos))
+                castleMove[castleKing].Remove(rookPos);
+            
         }
     }
+
+    #endregion
 
     void makeSqaureForKing(Vector2Int myKing, Vector2Int oppoKing, List<Vector2Int> banSquare)
     {
@@ -1847,7 +1833,6 @@ public class placePieces : MonoBehaviour
         Obj.transform.position = chessBoard.board[x, y].transform.position;
         piecesData[new Vector2Int(x, y)] = new PiecesLocation(x, y, name, color, piece);
     }
-
 
     private Vector3 GetTileCenter(int x, int y)
     {
