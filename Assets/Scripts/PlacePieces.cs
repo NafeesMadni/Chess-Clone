@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class placePieces : MonoBehaviour
 {
     #region Variables
@@ -86,7 +87,7 @@ public class placePieces : MonoBehaviour
         prevTileColor = null;
         prevCheckedTile = null;
         kingIsUnderAttack = false;
-        delaySeconds = 0.5f;
+        delaySeconds = 0.25f;
         playerTurn = 'W';
         movesLeft = -1;
 
@@ -106,7 +107,7 @@ public class placePieces : MonoBehaviour
 
         _placePieces();
 
-        calculateAvailableMoves();
+        CalculateAvailableMoves();
     }
 
     void Update()
@@ -296,7 +297,7 @@ public class placePieces : MonoBehaviour
 
                     piecesData.Remove(prevClickedPosition);
 
-                    calculateAvailableMoves();
+                    CalculateAvailableMoves();
 
                     piecesProtectingKing();
 
@@ -831,7 +832,7 @@ public class placePieces : MonoBehaviour
         
         if (kingIsUnderAttack)
         {
-            delaySeconds = 0.75f;
+            delaySeconds = 0.25f;
             if(chessBoard.board[kingPos.x, kingPos.y].GetComponent<MeshRenderer>().material != checkedTile)
                 prevCheckedTile = chessBoard.board[kingPos.x, kingPos.y].GetComponent<MeshRenderer>().material;
             chessBoard.board[kingPos.x, kingPos.y].GetComponent<MeshRenderer>().material = checkedTile;
@@ -1282,7 +1283,7 @@ public class placePieces : MonoBehaviour
     #endregion
 
     #region Calculating Available Moves
-    private void calculateAvailableMoves()
+    private void CalculateAvailableMoves()
     {
         w_KingBlockSq.Clear();
         b_KingBlockSq.Clear();
@@ -1301,49 +1302,49 @@ public class placePieces : MonoBehaviour
                     {
                         case "King":
                             if(color == 'W') {
-                                availableMoves[piecePos] = KingMoves(x, y, color, b_KingBlockSq);
+                                availableMoves[piecePos] = GetKingMoves(x, y, color, b_KingBlockSq);
                                 w_kingPos = piecePos;
                             } 
                             else
                             {
-                                availableMoves[piecePos] = KingMoves(x, y, color, w_KingBlockSq);
+                                availableMoves[piecePos] = GetKingMoves(x, y, color, w_KingBlockSq);
                                 b_kingPos = piecePos;
                             }
                             break;
 
                         case "Queen":
                             if(color == 'W')
-                                availableMoves[piecePos] = QueenMoves(x, y, color, b_KingBlockSq);
+                                availableMoves[piecePos] = GetQueenMoves(x, y, color, b_KingBlockSq);
                             else
-                                availableMoves[piecePos] = QueenMoves(x, y, color, w_KingBlockSq);
+                                availableMoves[piecePos] = GetQueenMoves(x, y, color, w_KingBlockSq);
                             break;
                         
                         case "Rook":
                             if (color == 'W')
-                                availableMoves[piecePos] = RookMoves(x, y, color, b_KingBlockSq);
+                                availableMoves[piecePos] = GetRookMoves(x, y, color, b_KingBlockSq);
                             else
-                                availableMoves[piecePos] = RookMoves(x, y, color, w_KingBlockSq);
+                                availableMoves[piecePos] = GetRookMoves(x, y, color, w_KingBlockSq);
                             break;
 
                         case "Bishop":
                             if (color == 'W')
-                                availableMoves[piecePos] = BishopMoves(x, y, color, b_KingBlockSq);
+                                availableMoves[piecePos] = GetBishopMoves(x, y, color, b_KingBlockSq);
                             else 
-                                availableMoves[piecePos] = BishopMoves(x, y, color, w_KingBlockSq);
+                                availableMoves[piecePos] = GetBishopMoves(x, y, color, w_KingBlockSq);
                             break;
 
                         case "Knight":
                             if (color == 'W')
-                                availableMoves[piecePos] = KnightMoves(x, y, color, b_KingBlockSq);
+                                availableMoves[piecePos] = GetKnightMoves(x, y, color, b_KingBlockSq);
                             else 
-                                availableMoves[piecePos] = KnightMoves(x, y, color, w_KingBlockSq);
+                                availableMoves[piecePos] = GetKnightMoves(x, y, color, w_KingBlockSq);
                             break;
 
                         case "Pawn":
                             if (color == 'W')
-                                availableMoves[piecePos] = PawnMoves(x, y, color, b_KingBlockSq);
+                                availableMoves[piecePos] = GetPawnMoves(x, y, color, b_KingBlockSq);
                             else
-                                availableMoves[piecePos] = PawnMoves(x, y, color, w_KingBlockSq);
+                                availableMoves[piecePos] = GetPawnMoves(x, y, color, w_KingBlockSq);
                             break;
 
                         default:
@@ -1355,29 +1356,54 @@ public class placePieces : MonoBehaviour
 
         //king possible squares and castling moves always change after each move
         if (playerTurn == 'W'){
-            makeSqaureForKing(w_kingPos, b_kingPos, w_KingBlockSq);
+            MakeSqaureForKing(w_kingPos, b_kingPos, w_KingBlockSq);
 
             Vector2Int castleKing = new Vector2Int(0, 4); // king first position
             Vector2Int leftRook = new Vector2Int(0, 0);
             Vector2Int rightRook = new Vector2Int(0, 7);
 
-            updateCastleMoves(castleKing, w_kingPos, leftRook, rightRook);
+            UpdateCastleMoves(castleKing, w_kingPos, leftRook, rightRook);
         }
 
         else 
         {
-            makeSqaureForKing(b_kingPos, w_kingPos, b_KingBlockSq);
+            MakeSqaureForKing(b_kingPos, w_kingPos, b_KingBlockSq);
 
             Vector2Int castleKing = new Vector2Int(7, 4);
             Vector2Int leftRook = new Vector2Int(7, 0);
             Vector2Int rightRook = new Vector2Int(7, 7);
 
-            updateCastleMoves(castleKing, b_kingPos, leftRook, rightRook);
+            UpdateCastleMoves(castleKing, b_kingPos, leftRook, rightRook);
         }
     }
 
+    private void MakeSqaureForKing(Vector2Int myKing, Vector2Int oppoKing, List<Vector2Int> banSquare)
+    {
+        List<Vector2Int> oppoKingMoves = availableMoves[oppoKing];
+
+        for (int i = 0; i < availableMoves[myKing].Count; i++)
+        {
+            // oppoKingMoves.Contains(availableMoves[myKing][i]) -> Removing all the moves that're occupied by opponent king
+            if (banSquare.Contains(availableMoves[myKing][i]) || oppoKingMoves.Contains(availableMoves[myKing][i]))
+                availableMoves[myKing].Remove(availableMoves[myKing][i--]);
+
+        }
+
+
+    }
+
+    private void AddDangerSquareForKing(List<Vector2Int> list, List<Vector2Int> kingBlockSq)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (!kingBlockSq.Contains(list[i]))
+                kingBlockSq.Add(list[i]);
+        }
+    }
+
+
     #region Updating Castling Possibilities
-    private void updateCastleMoves(Vector2Int castleKing, Vector2Int king, Vector2Int leftRook, Vector2Int rightRook)
+    private void UpdateCastleMoves(Vector2Int castleKing, Vector2Int king, Vector2Int leftRook, Vector2Int rightRook)
     {
         if (!castleMove.ContainsKey(castleKing) || castleKing != king)
         {
@@ -1408,64 +1434,40 @@ public class placePieces : MonoBehaviour
 
     #endregion
 
-    void makeSqaureForKing(Vector2Int myKing, Vector2Int oppoKing, List<Vector2Int> banSquare)
-    {
-        List<Vector2Int> oppoKingMoves = availableMoves[oppoKing];
-
-        for (int i = 0; i < availableMoves[myKing].Count; i++)
-        {
-            // oppoKingMoves.Contains(availableMoves[myKing][i]) -> Removing all the moves that're occupied by opponent king
-            if (banSquare.Contains(availableMoves[myKing][i]) || oppoKingMoves.Contains(availableMoves[myKing][i])) 
-                availableMoves[myKing].Remove(availableMoves[myKing][i--]);
-            
-        }
-
-        
-    }
-
-    private void dangerSquareForKing(List<Vector2Int> list, List<Vector2Int> kingBlockSq)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            if (!kingBlockSq.Contains(list[i]))
-                kingBlockSq.Add(list[i]);
-        }
-    }
-
     #region Knight Moves
-    private List<Vector2Int> KnightMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
+    private List<Vector2Int> GetKnightMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
 
         if(IsWithinBounds(x + 2, y - 1))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x + 2, y - 1), color);        
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x + 2, y - 1), color);        
 
         if (IsWithinBounds(x + 1, y - 2))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x + 1, y - 2), color);
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x + 1, y - 2), color);
         
         if (IsWithinBounds(x - 1, y - 2))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x - 1, y - 2), color);
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x - 1, y - 2), color);
         
         if (IsWithinBounds(x - 2, y - 1))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x - 2, y - 1), color);
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x - 2, y - 1), color);
         
         if (IsWithinBounds(x - 1, y + 2))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x - 1, y + 2), color);
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x - 1, y + 2), color);
         
         if (IsWithinBounds(x - 2, y + 1))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x - 2, y + 1), color);
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x - 2, y + 1), color);
         
         if (IsWithinBounds(x + 2, y + 1))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x + 2, y + 1), color);
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x + 2, y + 1), color);
 
         if (IsWithinBounds(x + 1, y + 2))
-            childOfKnight(list, kingBlockSq, new Vector2Int(x + 1, y + 2), color);
+            AddKnightMove(list, kingBlockSq, new Vector2Int(x + 1, y + 2), color);
         
-        dangerSquareForKing(list, kingBlockSq);
+        AddDangerSquareForKing(list, kingBlockSq);
         return list;
     }
 
-    private void childOfKnight(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color)
+    private void AddKnightMove(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color)
     {
         if (piecesData.ContainsKey(move))
         {
@@ -1482,7 +1484,7 @@ public class placePieces : MonoBehaviour
     #endregion 
 
     #region King Moves
-    private List<Vector2Int> KingMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
+    private List<Vector2Int> GetKingMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
 
@@ -1490,46 +1492,46 @@ public class placePieces : MonoBehaviour
 
         // Vector2Int(0, -1)
         if(IsWithinBounds(x, y - 1))
-            childOfKing(list, kingBlockSq, new Vector2Int(x, y - 1), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x, y - 1), color);
 
         // Vector2Int(0, 1));
         if (IsWithinBounds(x, y + 1))
-            childOfKing(list, kingBlockSq, new Vector2Int(x, y + 1), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x, y + 1), color);
         
 
         // => Upper Row Moves
 
         // Vector2Int(1, 0)
         if (IsWithinBounds(x + 1, y))
-            childOfKing(list, kingBlockSq, new Vector2Int(x + 1, y), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x + 1, y), color);
 
         // Vector2Int(1, -1)
         if (IsWithinBounds(x + 1, y - 1 ))
-            childOfKing(list, kingBlockSq, new Vector2Int(x + 1, y - 1), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x + 1, y - 1), color);
 
         //Vector2Int(1, 1)
         if (IsWithinBounds(x + 1, y + 1))
-            childOfKing(list, kingBlockSq, new Vector2Int(x + 1, y + 1), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x + 1, y + 1), color);
         
 
         // => Bottom Row Moves
 
         // Vector2Int(-1, 0)
         if(IsWithinBounds(x - 1, y))
-            childOfKing(list, kingBlockSq, new Vector2Int(x - 1, y), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x - 1, y), color);
 
         // Vector2Int(-1, -1)
         if (IsWithinBounds(x - 1, y - 1))
-            childOfKing(list, kingBlockSq, new Vector2Int(x - 1, y - 1), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x - 1, y - 1), color);
         
         // Vector2Int(-1, 1)
         if(IsWithinBounds(x - 1, y + 1))
-            childOfKing(list, kingBlockSq, new Vector2Int(x - 1, y + 1), color);
+            AddKingMove(list, kingBlockSq, new Vector2Int(x - 1, y + 1), color);
         
         return list;
     }
 
-    private void childOfKing(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color)
+    private void AddKingMove(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color)
     {
         if (piecesData.ContainsKey(move))
         {
@@ -1548,20 +1550,20 @@ public class placePieces : MonoBehaviour
 
     #region Queen Moves
 
-    private List<Vector2Int> QueenMoves(int x, int y, char color, List<Vector2Int> KingBlockSq)
+    private List<Vector2Int> GetQueenMoves(int x, int y, char color, List<Vector2Int> KingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
-        list.AddRange(BishopMoves(x, y, color, KingBlockSq));
-        list.AddRange(RookMoves(x, y, color, KingBlockSq));
+        list.AddRange(GetBishopMoves(x, y, color, KingBlockSq));
+        list.AddRange(GetRookMoves(x, y, color, KingBlockSq));
         
-        dangerSquareForKing(list, KingBlockSq);
+        AddDangerSquareForKing(list, KingBlockSq);
         return list;
     }
 
     #endregion
 
     #region Bishop Moves
-    private List<Vector2Int> BishopMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
+    private List<Vector2Int> GetBishopMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
         Vector2Int move;
@@ -1602,7 +1604,7 @@ public class placePieces : MonoBehaviour
             
             if (move.x >= 8 || move.y >= 8) break;
 
-            bool breakTheLoop = childOfBishop(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddBishopMove(list, kingBlockSq, move, color);
             if (breakTheLoop) break;
 
         }
@@ -1614,7 +1616,7 @@ public class placePieces : MonoBehaviour
 
             if (move.x >= 8 || move.y < 0) break;
 
-            bool breakTheLoop = childOfBishop(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddBishopMove(list, kingBlockSq, move, color);
             if (breakTheLoop) break;
         }
         // Bottom-Right Diagonal => x decreases & y increases
@@ -1624,7 +1626,7 @@ public class placePieces : MonoBehaviour
             
             if (move.x < 0 || move.y >= 8) break;
 
-            bool breakTheLoop = childOfBishop(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddBishopMove(list, kingBlockSq, move, color);
             if (breakTheLoop) break;
         }
         // Bottom-Left Diagonal => Both decreses
@@ -1634,15 +1636,15 @@ public class placePieces : MonoBehaviour
             
             if (move.x < 0 || move.y < 0) break;
             
-            bool breakTheLoop = childOfBishop(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddBishopMove(list, kingBlockSq, move, color);
             if (breakTheLoop) break;
         }
 
-        dangerSquareForKing(list, kingBlockSq);
+        AddDangerSquareForKing(list, kingBlockSq);
         return list;
     }
 
-    private bool childOfBishop(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color) 
+    private bool AddBishopMove(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color) 
     {
         if (piecesData.ContainsKey(move))
         {
@@ -1667,7 +1669,7 @@ public class placePieces : MonoBehaviour
 
     #region Rook Moves
     
-    private List<Vector2Int> RookMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
+    private List<Vector2Int> GetRookMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
         Vector2Int move;
@@ -1677,7 +1679,7 @@ public class placePieces : MonoBehaviour
         {
             move = new Vector2Int(i, y);
 
-            bool breakTheLoop = childOfRook(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddRookMove(list, kingBlockSq, move, color);
             if(breakTheLoop) break;
         }
 
@@ -1686,7 +1688,7 @@ public class placePieces : MonoBehaviour
         {
             move = new Vector2Int(i, y);
             
-            bool breakTheLoop = childOfRook(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddRookMove(list, kingBlockSq, move, color);
             if (breakTheLoop) break;
         }
 
@@ -1696,7 +1698,7 @@ public class placePieces : MonoBehaviour
         {
             move = new Vector2Int(x, i);
             
-            bool breakTheLoop = childOfRook(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddRookMove(list, kingBlockSq, move, color);
             if (breakTheLoop) break;
         }
 
@@ -1706,15 +1708,15 @@ public class placePieces : MonoBehaviour
         {
             move = new Vector2Int(x, i);
 
-            bool breakTheLoop = childOfRook(list, kingBlockSq, move, color);
+            bool breakTheLoop = AddRookMove(list, kingBlockSq, move, color);
             if (breakTheLoop) break;
         }
 
-        dangerSquareForKing(list, kingBlockSq);
+        AddDangerSquareForKing(list, kingBlockSq);
         return list;
     }
 
-    private bool childOfRook(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color)
+    private bool AddRookMove(List<Vector2Int> list, List<Vector2Int> kingBlockSq, Vector2Int move, char color)
     {
         if (piecesData.ContainsKey(move))
         {
@@ -1735,9 +1737,9 @@ public class placePieces : MonoBehaviour
 
     #endregion
 
-    #region Pawns
+    #region Pawn Moves
 
-    private List<Vector2Int> PawnMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
+    private List<Vector2Int> GetPawnMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
         Vector2Int move;
