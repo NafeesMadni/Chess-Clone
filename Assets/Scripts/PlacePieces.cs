@@ -192,7 +192,7 @@ public class placePieces : MonoBehaviour
                 }
 
 
-                if (isValidMove(position, prevClickedPosition))
+                if (IsValidMove(position, prevClickedPosition))
                 {
                     audioSource.clip = move; // first maybe just a simple move
 
@@ -342,7 +342,7 @@ public class placePieces : MonoBehaviour
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
 
-    private bool isValidMove(Vector2Int movePos, Vector2Int piecePos)
+    private bool IsValidMove(Vector2Int movePos, Vector2Int piecePos)
     {
         if (piecePos == -Vector2Int.one || piecePos == movePos) return false;
 

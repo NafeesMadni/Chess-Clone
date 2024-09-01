@@ -32,7 +32,7 @@ public class ChessBoard : MonoBehaviour
             }
         }
     
-        return -Vector2Int.one; // never hit
+        return -Vector2Int.one; 
     }
     #endregion
 
