@@ -105,7 +105,7 @@ public class placePieces : MonoBehaviour
         };
         castleMove[new Vector2Int(7, 4)] = blackRook;
 
-        _placePieces();
+        PlacePieces();
 
         CalculateAvailableMoves();
     }
@@ -289,17 +289,17 @@ public class placePieces : MonoBehaviour
 
                     // Promotion move
                     if (playerTurn != 'W' && piecesData[position].name == "Pawn" && piecesData[position].x == 7)
-                        piecePromotion(position, W_Queen, 'W');
+                        PiecePromotion(position, W_Queen, 'W');
                     
                     else if (playerTurn != 'B' && piecesData[position].name == "Pawn" && piecesData[position].x == 0)
-                        piecePromotion(position, B_Queen, 'B');
+                        PiecePromotion(position, B_Queen, 'B');
                     
 
                     piecesData.Remove(prevClickedPosition);
 
                     CalculateAvailableMoves();
 
-                    piecesProtectingKing();
+                    PiecesProtectingKing();
 
                     calculateEnPassant(position);
                     
@@ -307,7 +307,7 @@ public class placePieces : MonoBehaviour
                     
                     checkIsKingAttacked();
                     
-                    calculateCastlingMoves();
+                    CalculateCastlingMoves();
 
                     audioSource.Play();
                 }
@@ -357,7 +357,7 @@ public class placePieces : MonoBehaviour
 
     #region Calculating Castling Move
 
-    private void calculateCastlingMoves()
+    private void CalculateCastlingMoves()
     {
         Vector2Int king = playerTurn == 'W' ? new Vector2Int(0, 4) : new Vector2Int(7, 4);
 
@@ -448,7 +448,7 @@ public class placePieces : MonoBehaviour
     #endregion
 
     #region King Protection
-    private void piecesProtectingKing()
+    private void PiecesProtectingKing()
     {
         char color = playerTurn == 'W' ? 'W' : 'B';
         foreach (Vector2Int attackerPos in piecesData.Keys)
@@ -464,13 +464,13 @@ public class placePieces : MonoBehaviour
                         if (availableMoves[attackerPos].Contains(kingGuardPiece) && piecesData[kingGuardPiece].name != "King")
                         {
                             if (attackerPos.x == kingGuardPiece.x)
-                                horizontallyKingProtection(attackerPos, kingGuardPiece);
+                                HorizontallyKingProtection(attackerPos, kingGuardPiece);
 
                             else if (attackerPos.y == kingGuardPiece.y)
-                                verticallyKingProtection(attackerPos, kingGuardPiece);
+                                VerticallyKingProtection(attackerPos, kingGuardPiece);
 
                             else if (isDiagonal(kingGuardPiece, attackerPos))
-                                diagonallyKingProtection(attackerPos, kingGuardPiece);
+                                DiagonallyKingProtection(attackerPos, kingGuardPiece);
 
                         }
                     }
@@ -479,7 +479,7 @@ public class placePieces : MonoBehaviour
         }
     }
 
-    private void horizontallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
+    private void HorizontallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
     {
         bool isKingBehind = false;
 
@@ -531,7 +531,7 @@ public class placePieces : MonoBehaviour
         }
     }
 
-    private void verticallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
+    private void VerticallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
     {
         bool isKingBehind = false;
 
@@ -583,7 +583,7 @@ public class placePieces : MonoBehaviour
         }
     }
 
-    private void diagonallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
+    private void DiagonallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
     {
         bool isKingBehind = false;
 
@@ -732,7 +732,7 @@ public class placePieces : MonoBehaviour
 
     #region Piece Promotion
 
-    private void piecePromotion(Vector2Int curPos, GameObject queen, char color)
+    private void PiecePromotion(Vector2Int curPos, GameObject queen, char color)
     {
         audioSource.clip = promotion;
         foreach (Transform child in chessBoard.board[curPos.x, curPos.y].transform)
@@ -1774,7 +1774,7 @@ public class placePieces : MonoBehaviour
 
     #region Locating Pieces
 
-    void _placePieces()
+    void PlacePieces()
     {
         for (int x = 0; x < 8; x++)
         {
