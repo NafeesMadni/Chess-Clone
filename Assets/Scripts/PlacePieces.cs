@@ -161,7 +161,7 @@ public class placePieces : MonoBehaviour
             {
                 Vector2Int position = chessBoard.GetTileIndex(hitInfo.collider.gameObject);
 
-                // if playerTurn color not equal to the clicked position color turn then return.
+                // if playerTurn color not equal to the clicked position color then return.
                 
                 if (prevClickedPosition != -Vector2Int.one && piecesData.ContainsKey(position)) {
                     if(playerTurn != piecesData[position].color)
