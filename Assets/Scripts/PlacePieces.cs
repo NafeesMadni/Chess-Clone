@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class placePieces : MonoBehaviour
 {
     #region Variables
@@ -327,7 +326,7 @@ public class placePieces : MonoBehaviour
                         chessBoard.board[prevClickedPosition.x, prevClickedPosition.y].GetComponent<MeshRenderer>().material = prevTileColor;
                     }
 
-                    drawCircles(position);
+                    drawDots(position);
                     prevTileColor = chessBoard.board[position.x, position.y].GetComponent<MeshRenderer>().material;
                     chessBoard.board[position.x, position.y].GetComponent<MeshRenderer>().material = clickedTile;
                     prevClickedPosition = position;
@@ -335,6 +334,11 @@ public class placePieces : MonoBehaviour
 
             }
         }
+    }
+
+    private bool IsWithinBounds(int x, int y)
+    {
+        return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
 
     private bool isValidMove(Vector2Int movePos, Vector2Int piecePos)
@@ -459,13 +463,13 @@ public class placePieces : MonoBehaviour
                         if (availableMoves[attackerPos].Contains(kingGuardPiece) && piecesData[kingGuardPiece].name != "King")
                         {
                             if (attackerPos.x == kingGuardPiece.x)
-                                horiKingProtection(attackerPos, kingGuardPiece);
+                                horizontallyKingProtection(attackerPos, kingGuardPiece);
 
                             else if (attackerPos.y == kingGuardPiece.y)
-                                VertKingProtection(attackerPos, kingGuardPiece);
+                                verticallyKingProtection(attackerPos, kingGuardPiece);
 
                             else if (isDiagonal(kingGuardPiece, attackerPos))
-                                diagKingProtection(attackerPos, kingGuardPiece);
+                                diagonallyKingProtection(attackerPos, kingGuardPiece);
 
                         }
                     }
@@ -474,7 +478,7 @@ public class placePieces : MonoBehaviour
         }
     }
 
-    private void horiKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
+    private void horizontallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
     {
         bool isKingBehind = false;
 
@@ -526,7 +530,7 @@ public class placePieces : MonoBehaviour
         }
     }
 
-    private void VertKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
+    private void verticallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
     {
         bool isKingBehind = false;
 
@@ -578,7 +582,7 @@ public class placePieces : MonoBehaviour
         }
     }
 
-    private void diagKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
+    private void diagonallyKingProtection(Vector2Int attackerPos, Vector2Int kingGuardPiece)
     {
         bool isKingBehind = false;
 
@@ -1253,7 +1257,7 @@ public class placePieces : MonoBehaviour
     #endregion
 
     #region Highlighting Available Moves 
-    void drawCircles(Vector2Int pos)
+    void drawDots(Vector2Int pos)
     {
         for (int i = 0; i < availableMoves[pos].Count; i++)
         {
@@ -1446,69 +1450,32 @@ public class placePieces : MonoBehaviour
     private List<Vector2Int> KnightMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
-        Vector2Int move;
 
-        // => Top-Left
+        if(IsWithinBounds(x + 2, y - 1))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x + 2, y - 1), color);        
 
-        // Vector2Int(2, -1)
-        if (x + 2 < 8 && y - 1 >= 0)
-        {
-            move = new Vector2Int(x + 2, y - 1);
+        if (IsWithinBounds(x + 1, y - 2))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x + 1, y - 2), color);
+        
+        if (IsWithinBounds(x - 1, y - 2))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x - 1, y - 2), color);
+        
+        if (IsWithinBounds(x - 2, y - 1))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x - 2, y - 1), color);
+        
+        if (IsWithinBounds(x - 1, y + 2))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x - 1, y + 2), color);
+        
+        if (IsWithinBounds(x - 2, y + 1))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x - 2, y + 1), color);
+        
+        if (IsWithinBounds(x + 2, y + 1))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x + 2, y + 1), color);
 
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
-        // Vector2Int(1, -2)
-        if (x + 1 < 8 && y - 2 >= 0)
-        {
-            move = new Vector2Int(x + 1, y - 2);
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
-        // Vector2Int(-1, -2)
-        if (x - 1 >= 0 && y - 2 >= 0)
-        {
-            move = new Vector2Int(x - 1, y - 2);
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
-        // Vector2Int(-2, -1)
-        if (x - 2 >= 0 && y - 1 >= 0)
-        {
-            move = new Vector2Int(x - 2, y - 1);
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
-        // Vector2Int(-1, 2)
-        if (x - 1 >= 0 && y + 2 < 8)
-        {
-            move = new Vector2Int(x - 1, y + 2);
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
-        // Vector2Int(-2, 1)
-        if (x - 2 >= 0 && y + 1 < 8)
-        {
-            move = new Vector2Int(x - 2, y + 1);
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
-        // Vector2Int(2, 1)
-        if (x + 2 < 8 && y + 1 < 8)
-        {
-            move = new Vector2Int(x + 2, y + 1);
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
-        // Vector2Int(1, 2)
-        if (x + 1 < 8 && y + 2 < 8)
-        {
-            move = new Vector2Int(x + 1, y + 2);
-            childOfKnight(list, kingBlockSq, move, color);
-        }
-
+        if (IsWithinBounds(x + 1, y + 2))
+            childOfKnight(list, kingBlockSq, new Vector2Int(x + 1, y + 2), color);
+        
         dangerSquareForKing(list, kingBlockSq);
-
         return list;
     }
 
@@ -1532,71 +1499,47 @@ public class placePieces : MonoBehaviour
     private List<Vector2Int> KingMoves(int x, int y, char color, List<Vector2Int> kingBlockSq)
     {
         List<Vector2Int> list = new List<Vector2Int>();
-        Vector2Int move;
+
         // => Moves on the same Row
 
         // Vector2Int(0, -1)
-        if (y - 1 >= 0)
-        {
-            move = new Vector2Int(x, y - 1);
-            childOfKing(list, kingBlockSq, move, color);
-        }
+        if(IsWithinBounds(x, y - 1))
+            childOfKing(list, kingBlockSq, new Vector2Int(x, y - 1), color);
 
         // Vector2Int(0, 1));
-        if (y + 1 < 8)
-        {
-            move = new Vector2Int(x, y + 1);
-            childOfKing(list, kingBlockSq, move, color);
-        }
-
+        if (IsWithinBounds(x, y + 1))
+            childOfKing(list, kingBlockSq, new Vector2Int(x, y + 1), color);
+        
 
         // => Upper Row Moves
 
         // Vector2Int(1, 0)
-        if (x + 1 < 8)
-        {
-            move = new Vector2Int(x + 1, y);
-            childOfKing(list, kingBlockSq, move, color);
-        }
+        if (IsWithinBounds(x + 1, y))
+            childOfKing(list, kingBlockSq, new Vector2Int(x + 1, y), color);
 
         // Vector2Int(1, -1)
-        if (x + 1 < 8 && y - 1 >= 0)
-        {
-            move = new Vector2Int(x + 1, y - 1);
-            childOfKing(list, kingBlockSq, move, color);
-        }
+        if (IsWithinBounds(x + 1, y - 1 ))
+            childOfKing(list, kingBlockSq, new Vector2Int(x + 1, y - 1), color);
 
         //Vector2Int(1, 1)
-        if (x + 1 < 8 && y + 1 < 8)
-        {
-            move = new Vector2Int(x + 1, y + 1);
-
-            childOfKing(list, kingBlockSq, move, color);
-        }
+        if (IsWithinBounds(x + 1, y + 1))
+            childOfKing(list, kingBlockSq, new Vector2Int(x + 1, y + 1), color);
+        
 
         // => Bottom Row Moves
 
         // Vector2Int(-1, 0)
-        if (x - 1 >= 0)
-        {
-            move = new Vector2Int(x - 1, y);
-            childOfKing(list, kingBlockSq, move, color);
-        }
+        if(IsWithinBounds(x - 1, y))
+            childOfKing(list, kingBlockSq, new Vector2Int(x - 1, y), color);
 
         // Vector2Int(-1, -1)
-        if (x - 1 >= 0 && y - 1 >= 0)
-        {
-            move = new Vector2Int(x - 1, y - 1);
-            childOfKing(list, kingBlockSq, move, color);
-        }
-
+        if (IsWithinBounds(x - 1, y - 1))
+            childOfKing(list, kingBlockSq, new Vector2Int(x - 1, y - 1), color);
+        
         // Vector2Int(-1, 1)
-        if (x - 1 >= 0 && y + 1 < 8)
-        {
-            move = new Vector2Int(x - 1, y + 1);
-            childOfKing(list, kingBlockSq, move, color);
-        }
-
+        if(IsWithinBounds(x - 1, y + 1))
+            childOfKing(list, kingBlockSq, new Vector2Int(x - 1, y + 1), color);
+        
         return list;
     }
 
