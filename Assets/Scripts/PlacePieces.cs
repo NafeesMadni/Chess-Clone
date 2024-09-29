@@ -7,6 +7,7 @@ public class placePieces : MonoBehaviour
     #region Variables
     [Header("Accessing Other Classes")]
 
+
     [SerializeField] private ChessBoard chessBoard;
     [SerializeField] private Timer timer;
     [SerializeField] private GameManager gameManager;
